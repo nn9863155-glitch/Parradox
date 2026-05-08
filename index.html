@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Paradox Gx</title>
     
-    <!-- أيقونة المصباح للنافذة -->
-    <link rel="icon" href="https://fav.farm/💡">
+    <link rel="icon" href="https://fav.farm/💎">
 
     <style>
         :root {
@@ -44,17 +43,32 @@
             margin: 15px 0;
         }
 
-        /* المستطيل بالأبعاد المطلوبة */
         .game-container {
-            width: 80%; 
-            height: 82vh;
+            width: 85%; 
+            height: 80vh;
             border: 5px solid var(--neon-color);
             box-shadow: var(--neon-shadow), inset 0 0 30px var(--neon-color);
             border-radius: 20px;
             background: #000;
             position: relative;
-            overflow: hidden;
             z-index: 5;
+        }
+
+        /* الرتبة العائمة فوق اللعبة */
+        #rank-overlay {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            font-weight: bold;
+            color: #00f2ff;
+            font-size: 1.5rem;
+            text-shadow: 2px 2px 5px #000;
+            z-index: 100; /* تجعلها فوق اللعبة */
+            pointer-events: none; /* لكي لا تمنع الضغط داخل اللعبة */
+            display: none; /* مخفية في البداية */
+            background: rgba(0,0,0,0.4);
+            padding: 5px 10px;
+            border-radius: 5px;
         }
 
         iframe#game-screen {
@@ -63,8 +77,7 @@
             border: none;
         }
 
-        /* زر المصباح السفلي */
-        .neon-lamp-btn {
+        .neon-diamond-btn {
             position: fixed;
             bottom: 30px;
             left: 30px;
@@ -74,22 +87,19 @@
             border: none;
         }
 
-        .bulb-svg {
+        .diamond-svg {
             width: 50px;
             height: 50px;
             filter: drop-shadow(0 0 10px var(--neon-color));
             stroke: var(--neon-color);
-            stroke-width: 2;
+            stroke-width: 1.5;
             fill: none;
         }
 
-        /* إخفاء فيديو اليوتيوب تماماً */
         .video-container {
             position: absolute;
-            width: 0;
-            height: 0;
+            width: 0; height: 0;
             overflow: hidden;
-            pointer-events: none;
         }
 
         footer {
@@ -106,56 +116,59 @@
     <h1>Paradox Gx</h1>
 
     <div class="game-container">
+        <!-- طبقة الرتبة التي ستظهر وتختفي -->
+        <div id="rank-overlay">{💎Gx } : </div>
+        
         <iframe id="game-screen" src="https://bloxd.dev" allow="autoplay; fullscreen; keyboard"></iframe>
     </div>
 
-    <button class="neon-lamp-btn" onclick="toggleTheme()">
-        <svg class="bulb-svg" viewBox="0 0 24 24">
-            <path d="M9 21h6v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/>
+    <button class="neon-diamond-btn" onclick="toggleTheme()">
+        <svg class="diamond-svg" viewBox="0 0 24 24">
+            <path d="M12,2 22,10 12,22 2,10 12,2"/>
+            <line x1="12" y1="2" x2="12" y2="22"/>
+            <line x1="2" y1="10" x2="22" y2="10"/>
         </svg>
     </button>
 
-    <!-- حاوية الموسيقى (مخفية) -->
     <div class="video-container">
         <div id="player"></div>
     </div>
 
     <footer>PRODUCED BY PARADOX STUDIO</footer>
 
-    <!-- سكربت يوتيوب الرسمي للتحكم في التشغيل -->
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
         let player;
         let musicStarted = false;
+        let counter = 0; // عداد الضغطات
 
-        // دالة إنشاء المشغل
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                counter++;
+                const rankOverlay = document.getElementById('rank-overlay');
+                const rankText = "{💎Gx } : ";
+
+                if (counter % 2 !== 0) {
+                    // المرة الأولى (والثالثة...): إظهار الرتبة ونسخ النص
+                    rankOverlay.style.display = 'block';
+                    navigator.clipboard.writeText(rankText);
+                } else {
+                    // المرة الثانية (والرابعة...): إخفاء الرتبة
+                    rankOverlay.style.display = 'none';
+                }
+            }
+        });
+
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('player', {
-                height: '0',
-                width: '0',
-                videoId: 'XLmnV00utGo', // الكود الخاص بالفيديو الذي أرسلته
-                playerVars: {
-                    'autoplay': 1,
-                    'loop': 1,
-                    'playlist': 'XLmnV00utGo' // ضروري للتكرار
-                },
-                events: {
-                    'onReady': onPlayerReady
-                }
+                height: '0', width: '0', videoId: 'XLmnV00utGo',
+                playerVars: { 'autoplay': 1, 'loop': 1, 'playlist': 'XLmnV00utGo' },
+                events: { 'onReady': (e) => e.target.playVideo() }
             });
         }
 
-        function onPlayerReady(event) {
-            // نحاول التشغيل بمجرد الجاهزية (قد يحظره المتصفح حتى ينقر المستخدم)
-            event.target.playVideo();
-        }
-
-        // دالة تعمل عند أول نقرة في الموقع لتشغيل الموسيقى
         function playYTMuisc() {
-            if (!musicStarted && player && player.playVideo) {
-                player.playVideo();
-                musicStarted = true;
-            }
+            if (!musicStarted && player) { player.playVideo(); musicStarted = true; }
         }
 
         function toggleTheme() {
