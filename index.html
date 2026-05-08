@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Paradox Gx</title>
-    
-    <link rel="icon" href="https://fav.farm/💎">
+    <link rel="icon" href="https://fav.farm/💡">
 
     <style>
         :root {
@@ -44,38 +43,36 @@
         }
 
         .game-container {
-            width: 85%; 
+            width: 80%; 
             height: 82vh;
             border: 5px solid var(--neon-color);
             box-shadow: var(--neon-shadow), inset 0 0 30px var(--neon-color);
             border-radius: 20px;
             background: #000;
             position: relative;
-            z-index: 5;
+            overflow: hidden;
         }
 
-        iframe#game-screen {
+        iframe {
             width: 100%;
             height: 100%;
             border: none;
         }
 
-        .neon-diamond-btn {
+        .neon-lamp-btn {
             position: fixed;
             bottom: 30px;
             left: 30px;
             cursor: pointer;
-            z-index: 1000;
             background: none;
             border: none;
         }
 
-        .diamond-svg {
+        .bulb-svg {
             width: 50px;
             height: 50px;
-            filter: drop-shadow(0 0 10px var(--neon-color));
             stroke: var(--neon-color);
-            stroke-width: 1.5;
+            stroke-width: 2;
             fill: none;
         }
 
@@ -93,41 +90,31 @@
     <h1>Paradox Gx</h1>
 
     <div class="game-container">
-        <iframe id="game-screen" src="https://bloxd.dev" allow="autoplay; fullscreen; keyboard"></iframe>
+        <iframe src="https://bloxd.dev" allow="autoplay; fullscreen; keyboard"></iframe>
     </div>
 
-    <button class="neon-diamond-btn" onclick="toggleTheme()">
-        <svg class="diamond-svg" viewBox="0 0 24 24">
-            <path d="M12,2 22,10 12,22 2,10 12,2"/>
-            <line x1="12" y1="2" x2="12" y2="22"/>
-            <line x1="2" y1="10" x2="22" y2="10"/>
+    <button class="neon-lamp-btn" onclick="document.body.classList.toggle('light-mode')">
+        <svg class="bulb-svg" viewBox="0 0 24 24">
+            <path d="M9 21h6v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/>
         </svg>
     </button>
 
     <footer>PRODUCED BY PARADOX STUDIO</footer>
 
     <script>
-        let shouldWrite = true; // التحكم في دور الكتابة
+        let x = 1;
 
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                if (shouldWrite) {
-                    // المرة الأولى: نسخ الرتبة تلقائياً لتكون جاهزة للصق
-                    const rankText = "{💎Gx } : ";
-                    navigator.clipboard.writeText(rankText);
-                    
-                    // تغيير الحالة للمرة القادمة
-                    shouldWrite = false;
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                if (x === 1) {
+                    navigator.clipboard.writeText("{💎Gx } : ");
+                    document.execCommand('paste');
+                    x = 0;
                 } else {
-                    // المرة الثانية: لا يفعل شيء سوى تجهيز الدور القادم
-                    shouldWrite = true;
+                    x = 1;
                 }
             }
         });
-
-        function toggleTheme() {
-            document.body.classList.toggle('light-mode');
-        }
     </script>
 </body>
 </html>
