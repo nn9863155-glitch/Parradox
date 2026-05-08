@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Paradox Gx</title>
+    
+    <!-- أيقونة المصباح للنافذة -->
     <link rel="icon" href="https://fav.farm/💡">
 
     <style>
@@ -93,6 +95,7 @@
         <iframe src="https://bloxd.dev" allow="autoplay; fullscreen; keyboard"></iframe>
     </div>
 
+    <!-- زر المصباح لتغيير الوضع -->
     <button class="neon-lamp-btn" onclick="document.body.classList.toggle('light-mode')">
         <svg class="bulb-svg" viewBox="0 0 24 24">
             <path d="M9 21h6v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/>
@@ -107,10 +110,11 @@
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 if (x === 1) {
+                    // المرة الأولى: يضع العبارة في حافظتك
                     navigator.clipboard.writeText("{💎Gx } : ");
-                    document.execCommand('paste');
                     x = 0;
                 } else {
+                    // المرة الثانية: يصفر الحالة
                     x = 1;
                 }
             }
