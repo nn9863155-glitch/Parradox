@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paradox Gx</title>
+    
+    <!-- أيقونة المصباح للنافذة -->
+    <link rel="icon" href="https://fav.farm/💡">
+
+    <style>
+        :root {
+            --bg-color: #000814;
+            --neon-color: #00f2ff;
+            --text-color: #ffffff;
+            --neon-shadow: 0 0 20px var(--neon-color), 0 0 40px var(--neon-color);
+        }
+
+        .light-mode {
+            --bg-color: #f0f0f0;
+            --neon-color: #0066ff;
+            --text-color: #111;
+            --neon-shadow: 0 0 10px rgba(0, 102, 255, 0.5);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
+            transition: 0.5s ease;
+            overflow: hidden;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            text-transform: uppercase;
+            letter-spacing: 12px;
+            text-shadow: var(--neon-shadow);
+            margin: 15px 0;
+        }
+
+        /* المستطيل بالأبعاد المطلوبة */
+        .game-container {
+            width: 80%; 
+            height: 82vh;
+            border: 5px solid var(--neon-color);
+            box-shadow: var(--neon-shadow), inset 0 0 30px var(--neon-color);
+            border-radius: 20px;
+            background: #000;
+            position: relative;
+            overflow: hidden;
+            z-index: 5;
+        }
+
+        iframe#game-screen {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* زر المصباح السفلي */
+        .neon-lamp-btn {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            cursor: pointer;
+            z-index: 1000;
+            background: none;
+            border: none;
+        }
+
+        .bulb-svg {
+            width: 50px;
+            height: 50px;
+            filter: drop-shadow(0 0 10px var(--neon-color));
+            stroke: var(--neon-color);
+            stroke-width: 2;
+            fill: none;
+        }
+
+        /* إخفاء فيديو اليوتيوب تماماً */
+        .video-container {
+            position: absolute;
+            width: 0;
+            height: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 5px;
+            font-size: 10px;
+            color: #444;
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body onclick="playYTMuisc()">
+
+    <h1>Paradox Gx</h1>
+
+    <div class="game-container">
+        <iframe id="game-screen" src="https://bloxd.dev" allow="autoplay; fullscreen; keyboard"></iframe>
+    </div>
+
+    <button class="neon-lamp-btn" onclick="toggleTheme()">
+        <svg class="bulb-svg" viewBox="0 0 24 24">
+            <path d="M9 21h6v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/>
+        </svg>
+    </button>
+
+    <!-- حاوية الموسيقى (مخفية) -->
+    <div class="video-container">
+        <div id="player"></div>
+    </div>
+
+    <footer>PRODUCED BY PARADOX STUDIO</footer>
+
+    <!-- سكربت يوتيوب الرسمي للتحكم في التشغيل -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+        let player;
+        let musicStarted = false;
+
+        // دالة إنشاء المشغل
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '0',
+                width: '0',
+                videoId: 'XLmnV00utGo', // الكود الخاص بالفيديو الذي أرسلته
+                playerVars: {
+                    'autoplay': 1,
+                    'loop': 1,
+                    'playlist': 'XLmnV00utGo' // ضروري للتكرار
+                },
+                events: {
+                    'onReady': onPlayerReady
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            // نحاول التشغيل بمجرد الجاهزية (قد يحظره المتصفح حتى ينقر المستخدم)
+            event.target.playVideo();
+        }
+
+        // دالة تعمل عند أول نقرة في الموقع لتشغيل الموسيقى
+        function playYTMuisc() {
+            if (!musicStarted && player && player.playVideo) {
+                player.playVideo();
+                musicStarted = true;
+            }
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+        }
+    </script>
+</body>
+</html>
