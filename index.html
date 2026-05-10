@@ -1,421 +1,156 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Paradox Gx | Empire</title>
-
+    <title>Paradox Gx | Ultra Neon</title>
     
-
-    <!-- Tab Icon (Neon Bolt) -->
-
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2280%22 fill=%22%2300d9ff%22>⚡</text></svg>">
-
-
+    <!-- تم توحيد الاسم إلى logo.png -->
+    <link rel="icon" type="image/png" href="logo.png">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
 
     <style>
-
         :root {
-
-            --main-bg: #00050a;
-
+            --main-bg: #000000;
             --neon-color: #00d9ff;
-
-            --neon-shadow: 0 0 20px var(--neon-color), 0 0 40px var(--neon-color);
-
-            --glass: rgba(0, 0, 0, 0.85);
-
+            --neon-intensity: 40px;
+            --neon-shadow: 
+                0 0 10px var(--neon-color),
+                0 0 20px var(--neon-color),
+                0 0 40px var(--neon-color),
+                0 0 var(--neon-intensity) var(--neon-color);
         }
 
-
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Orbitron', sans-serif; transition: all 0.3s ease; }
-
-
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Orbitron', sans-serif; }
 
         body {
-
             background-color: var(--main-bg);
-
             color: #fff;
-
             overflow: hidden;
-
             display: flex;
-
             flex-direction: column;
-
             align-items: center;
-
             height: 100vh;
-
         }
 
+        #web-canvas { position: fixed; top: 0; left: 0; z-index: -1; pointer-events: none; }
 
-
-        /* FPS Display at Bottom-Left */
-
-        #fps-display {
-
-            position: fixed; bottom: 20px; left: 20px;
-
-            background: var(--glass); padding: 5px 15px; border-radius: 8px;
-
-            border: 1px solid var(--neon-color); color: var(--neon-color);
-
-            font-size: 14px; font-weight: bold; z-index: 2000;
-
-            display: none;
-
-            box-shadow: var(--neon-shadow);
-
+        .top-controls {
+            position: fixed; top: 15px; right: 15px;
+            display: flex; gap: 10px; z-index: 1000;
         }
 
-
-
-        /* Background Effects */
-
-        .fog-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.3; }
-
-        .fog { position: absolute; width: 200%; height: 200%; background: radial-gradient(circle, var(--neon-color) 0%, transparent 70%); filter: blur(100px); animation: fogMove 20s infinite alternate; }
-
-        @keyframes fogMove { from { transform: translate(-20%, -20%); } to { transform: translate(10%, 10%); } }
-
-
-
-        /* Settings Gear */
-
-        .settings-btn {
-
-            position: fixed; top: 25px; right: 25px;
-
-            width: 50px; height: 50px; background: var(--glass);
-
-            border: 2px solid var(--neon-color); border-radius: 12px;
-
-            cursor: pointer; z-index: 1000; display: flex; align-items: center; justify-content: center;
-
+        .icon-btn {
+            width: 45px; height: 45px; background: rgba(0,0,0,0.8);
+            border: 2px solid var(--neon-color); border-radius: 8px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            box-shadow: var(--neon-shadow); transition: 0.3s;
         }
-
-        .settings-btn svg { width: 30px; fill: var(--neon-color); }
-
-
-
-        /* Side Panel */
 
         .panel {
-
             position: fixed; top: 0; right: -350px; width: 320px; height: 100%;
-
-            background: var(--glass); backdrop-filter: blur(20px);
-
-            border-left: 3px solid var(--neon-color); padding: 30px 20px; z-index: 999;
-
-            overflow-y: auto;
-
+            background: rgba(0,0,0,0.95); backdrop-filter: blur(25px);
+            border-left: 4px solid var(--neon-color); padding: 30px 20px; z-index: 999;
+            transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1);
         }
-
         .panel.active { right: 0; }
 
-        .panel h2 { color: var(--neon-color); font-size: 16px; margin-bottom: 15px; border-bottom: 1px solid; text-transform: uppercase; letter-spacing: 2px; }
-
-
-
-        /* Color Grid (20+ Colors) */
-
-        .grid-colors { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 15px 0; }
-
-        .color-dot { width: 100%; aspect-ratio: 1; border-radius: 6px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); }
-
-        .color-dot:hover { transform: scale(1.15); border-color: #fff; }
-
-
-
-        /* Game Container */
+        .neon-slider { width: 100%; height: 8px; background: #111; border-radius: 10px; margin: 20px 0; outline: none; appearance: none; }
+        .neon-slider::-webkit-slider-thumb { appearance: none; width: 15px; height: 15px; background: var(--neon-color); border-radius: 50%; cursor: pointer; }
 
         .game-container {
-
-            width: 90%; height: 75vh; margin-top: 15px;
-
-            border: 3px solid var(--neon-color); border-radius: 25px;
-
+            width: 92%; height: 80vh; margin-top: 75px;
+            border: 4px solid var(--neon-color); border-radius: 25px;
             box-shadow: var(--neon-shadow); background: #000;
-
-            position: relative; z-index: 10;
-
+            transition: 0.4s ease; position: relative; z-index: 10;
+        }
+        
+        .game-container.fullscreen {
+            width: 100vw; height: 100vh; margin-top: 0; border-radius: 0;
+            position: fixed; top: 0; left: 0; z-index: 500;
         }
 
-        .game-container.fullscreen { width: 100vw; height: 100vh; position: fixed; top:0; left:0; border-radius:0; z-index: 2000; }
-
-        iframe { width: 100%; height: 100%; border: none; border-radius: 22px; }
-
+        iframe { width: 100%; height: 100%; border: none; border-radius: 21px; }
         .fullscreen iframe { border-radius: 0; }
 
+        h1 { 
+            margin-top: 15px; font-size: 2.8rem; color: var(--neon-color); 
+            text-shadow: var(--neon-shadow); letter-spacing: 20px; font-weight: 900;
+        }
 
-
-        .action-bar { position: absolute; bottom: 20px; right: 20px; display: flex; gap: 10px; z-index: 2001; }
-
-        .action-btn { background: var(--glass); border: 2px solid var(--neon-color); color: var(--neon-color); width: 45px; height: 45px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-
-
-
-        /* Interface Info */
-
-        #clock { position: fixed; top: 25px; left: 25px; color: var(--neon-color); font-size: 1rem; }
-
-        footer { margin-top: 15px; color: var(--neon-color); font-weight: bold; letter-spacing: 3px; font-size: 10px; text-transform: uppercase; opacity: 0.8; }
-
-
-
-        /* FPS Toggle Switch */
-
-        .switch-container { display: flex; align-items: center; justify-content: space-between; margin: 20px 0; color: #ccc; font-size: 14px; }
-
-        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
-
-        .switch input { opacity: 0; width: 0; height: 0; }
-
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 20px; }
-
-        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-
-        input:checked + .slider { background-color: var(--neon-color); }
-
-        input:checked + .slider:before { transform: translateX(20px); }
-
-
-
+        .grid-colors { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
+        .color-dot { width: 100%; aspect-ratio: 1; border-radius: 6px; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); }
     </style>
-
 </head>
-
 <body>
 
+    <canvas id="web-canvas"></canvas>
 
-
-    <audio id="tickSound"><source src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" type="audio/mpeg"></audio>
-
-
-
-    <div id="fps-display">FPS: --</div>
-
-    <div class="fog-container"><div class="fog" id="fogEffect"></div></div>
-
-    <div id="clock">00:00:00</div>
-
-
-
-    <button class="settings-btn" onclick="playTick(); toggleSettings()">
-
-        <svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.81,11.69,4.81,12c0,0.31,0.02,0.65,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
-
-    </button>
-
-
-
-    <div class="panel" id="sidePanel">
-
-        <h2>System Core</h2>
-
-        <div class="switch-container">
-
-            <span>Show FPS Counter</span>
-
-            <label class="switch">
-
-                <input type="checkbox" id="fpsToggle" onchange="toggleFpsDisplay()">
-
-                <span class="slider"></span>
-
-            </label>
-
-        </div>
-
-        
-
-        <h2>Color Palette</h2>
-
-        <div class="grid-colors">
-
-            <div class="color-dot" style="background:#00d9ff" onclick="changeColor('#00d9ff')"></div>
-
-            <div class="color-dot" style="background:#39ff14" onclick="changeColor('#39ff14')"></div>
-
-            <div class="color-dot" style="background:#ff0055" onclick="changeColor('#ff0055')"></div>
-
-            <div class="color-dot" style="background:#bc13fe" onclick="changeColor('#bc13fe')"></div>
-
-            <div class="color-dot" style="background:#ffaa00" onclick="changeColor('#ffaa00')"></div>
-
-            <div class="color-dot" style="background:#ff3300" onclick="changeColor('#ff3300')"></div>
-
-            <div class="color-dot" style="background:#0033ff" onclick="changeColor('#0033ff')"></div>
-
-            <div class="color-dot" style="background:#ffffff" onclick="changeColor('#ffffff')"></div>
-
-            <div class="color-dot" style="background:#ffff00" onclick="changeColor('#ffff00')"></div>
-
-            <div class="color-dot" style="background:#00ffaa" onclick="changeColor('#00ffaa')"></div>
-
-            <div class="color-dot" style="background:#ff00ff" onclick="changeColor('#ff00ff')"></div>
-
-            <div class="color-dot" style="background:#808080" onclick="changeColor('#808080')"></div>
-
-            <div class="color-dot" style="background:#4b0082" onclick="changeColor('#4b0082')"></div>
-
-            <div class="color-dot" style="background:#7fff00" onclick="changeColor('#7fff00')"></div>
-
-            <div class="color-dot" style="background:#ff1493" onclick="changeColor('#ff1493')"></div>
-
-            <div class="color-dot" style="background:#1e90ff" onclick="changeColor('#1e90ff')"></div>
-
-            <div class="color-dot" style="background:#ffd700" onclick="changeColor('#ffd700')"></div>
-
-            <div class="color-dot" style="background:#00ced1" onclick="changeColor('#00ced1')"></div>
-
-            <div class="color-dot" style="background:#adff2f" onclick="changeColor('#adff2f')"></div>
-
-            <div class="color-dot" style="background:#ff4500" onclick="changeColor('#ff4500')"></div>
-
-        </div>
-
+    <div class="top-controls">
+        <button class="icon-btn" onclick="toggleFullscreen()"><svg id="fsIcon" viewBox="0 0 24 24" width="22" fill="currentColor"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg></button>
+        <button class="icon-btn" onclick="toggleSettings()"><svg viewBox="0 0 24 24" width="22" fill="currentColor"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.81,11.69,4.81,12c0,0.31,0.02,0.65,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c-0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg></button>
     </div>
 
-
+    <div class="panel" id="sidePanel">
+        <h2>Neon Intensity</h2>
+        <input type="range" class="neon-slider" min="5" max="180" value="40" id="neonRange">
+        <h2>Theme Colors</h2>
+        <div class="grid-colors" id="colorGrid"></div>
+        <button onclick="toggleSettings()" style="width:100%; margin-top:40px; padding:12px; background:var(--neon-color); color:#000; border:none; font-weight:bold; cursor:pointer;">CLOSE</button>
+    </div>
 
     <h1>PARADOX GX</h1>
 
-
-
     <div class="game-container" id="gameBox">
-
         <iframe src="https://bloxd.dev"></iframe>
-
-        <div class="action-bar">
-
-            <button class="action-btn" onclick="playTick(); toggleFull()" id="zoomBtn">
-
-                <svg viewBox="0 0 24 24"><path fill="currentColor" d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
-
-            </button>
-
-        </div>
-
     </div>
 
-
-
-    <footer>Produced by Paradox Studio</footer>
-
-
-
     <script>
-
-        // FPS Counter System
-
-        let times = [];
-
-        function calculateFps() {
-
-            window.requestAnimationFrame(() => {
-
-                const now = performance.now();
-
-                while (times.length > 0 && times[0] <= now - 1000) { times.shift(); }
-
-                times.push(now);
-
-                document.getElementById('fps-display').innerText = `FPS: ${times.length}`;
-
-                calculateFps();
-
-            });
-
-        }
-
-        calculateFps();
-
-
-
-        function toggleFpsDisplay() {
-
-            const isChecked = document.getElementById('fpsToggle').checked;
-
-            document.getElementById('fps-display').style.display = isChecked ? 'block' : 'none';
-
-        }
-
-
-
-        const tick = document.getElementById('tickSound');
-
-        function playTick() { tick.currentTime = 0; tick.play(); }
-
-
-
+        function toggleFullscreen() { document.getElementById('gameBox').classList.toggle('fullscreen'); }
         function toggleSettings() { document.getElementById('sidePanel').classList.toggle('active'); }
 
-        
+        const neonRange = document.getElementById('neonRange');
+        neonRange.oninput = (e) => {
+            document.documentElement.style.setProperty('--neon-intensity', e.target.value + "px");
+        };
 
-        function changeColor(c) {
+        const colors = ['#00d9ff', '#39ff14', '#ff0055', '#bc13fe', '#ffff00', '#ff8800', '#ffffff', '#ff00ff', '#00ffaa', '#1e90ff'];
+        const grid = document.getElementById('colorGrid');
+        colors.forEach(c => {
+            const d = document.createElement('div');
+            d.className = 'color-dot'; d.style.background = c; d.onclick = () => document.documentElement.style.setProperty('--neon-color', c);
+            grid.appendChild(d);
+        });
 
-            playTick();
-
-            document.documentElement.style.setProperty('--neon-color', c);
-
-            document.getElementById('fogEffect').style.background = `radial-gradient(circle, ${c} 0%, transparent 70%)`;
-
+        // Background Web Logic
+        const canvas = document.getElementById('web-canvas');
+        const ctx = canvas.getContext('2d');
+        let dots = [];
+        function init() {
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            dots = [];
+            for(let i=0; i<60; i++) dots.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, vx: (Math.random()-0.5), vy: (Math.random()-0.5) });
         }
-
-
-
-        function toggleFull() {
-
-            const box = document.getElementById('gameBox');
-
-            box.classList.toggle('fullscreen');
-
-            const btn = document.getElementById('zoomBtn');
-
-            if(box.classList.contains('fullscreen')) {
-
-                btn.innerHTML = `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>`;
-
-            } else {
-
-                btn.innerHTML = `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>`;
-
-            }
-
+        function draw() {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            ctx.fillStyle = ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--neon-color');
+            dots.forEach(d => {
+                d.x += d.vx; d.y += d.vy;
+                if(d.x<0 || d.x>canvas.width) d.vx*=-1; if(d.y<0 || d.y>canvas.height) d.vy*=-1;
+                ctx.beginPath(); ctx.arc(d.x, d.y, 1.5, 0, Math.PI*2); ctx.fill();
+                dots.forEach(d2 => {
+                    let dist = Math.hypot(d.x-d2.x, d.y-d2.y);
+                    if(dist < 120) {
+                        ctx.globalAlpha = 1 - (dist/120); ctx.lineWidth = 0.6;
+                        ctx.beginPath(); ctx.moveTo(d.x,d.y); ctx.lineTo(d2.x,d2.y); ctx.stroke();
+                        ctx.globalAlpha = 1;
+                    }
+                });
+            });
+            requestAnimationFrame(draw);
         }
-
-
-
-        setInterval(() => {
-
-            document.getElementById('clock').innerText = new Date().toLocaleTimeString();
-
-        }, 1000);
-
-
-
-        window.onclick = function(e) {
-
-            if (!e.target.closest('.panel') && !e.target.closest('.settings-btn')) {
-
-                document.getElementById('sidePanel').classList.remove('active');
-
-            }
-
-        }
-
+        init(); draw(); window.onresize = init;
     </script>
-
 </body>
-
 </html>
